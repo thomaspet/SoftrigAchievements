@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddDbContext<Context>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
+builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -42,5 +43,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/api/new-achievements", NewAchievements.GetNewAchievements).RequireAuthorization();
+app.MapPost("/webhooks/new-company", Webhooks.NewCompanyAddedWebhook).AllowAnonymous();
 
 await app.RunAsync();
