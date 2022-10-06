@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace SoftrigAchievements.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20221006090905_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20221006122544_FixAchievementForUser")]
+    partial class FixAchievementForUser
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -70,6 +70,66 @@ namespace SoftrigAchievements.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("SoftrigAchievements.Models.Achievement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Achievement");
+                });
+
+            modelBuilder.Entity("SoftrigAchievements.Models.AchievementForUser", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<bool>("Achieved")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("AchievementId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Recieved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("User")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AchievementId");
+
+                    b.ToTable("Achievements");
+                });
+
+            modelBuilder.Entity("SoftrigAchievements.Models.AchievementForUser", b =>
+                {
+                    b.HasOne("SoftrigAchievements.Models.Achievement", "Achievement")
+                        .WithMany()
+                        .HasForeignKey("AchievementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Achievement");
                 });
 #pragma warning restore 612, 618
         }

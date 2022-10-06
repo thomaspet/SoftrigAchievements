@@ -1,15 +1,16 @@
 using Microsoft.OpenApi.Models;
 using SoftrigAchievements;
-using DataCounter.Database;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Collections;
+using SoftrigAchievements.Controllers;
+using Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddDbContext<CounterDatabase>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddDbContext<Context>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -40,6 +41,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/api/new-achievements", () => new List<string>());
+app.MapGet("/api/new-achievements", NewAchievements.GetNewAchievements).RequireAuthorization();
 
 await app.RunAsync();
