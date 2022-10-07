@@ -8,7 +8,7 @@ namespace SoftrigAchievements.Services
 
     public interface IAchievementService
     {
-        List<Achievement> EventTriggeredAchievement(Event ev);
+        void EventTriggeredAchievement(Event ev);
     }
 
 
@@ -20,7 +20,7 @@ namespace SoftrigAchievements.Services
             _database = database;
         }
 
-        public List<Achievement> EventTriggeredAchievement(Event ev)
+        public void EventTriggeredAchievement(Event ev)
         {
             var eventType = AchievementType.InvoiceSent;//This needs changing
             var counterForUser = _database.CounterForUsers.FirstOrDefault(x => x.User == ev.GlobalIdentity && x.AchievementType == eventType);
@@ -40,7 +40,20 @@ namespace SoftrigAchievements.Services
             _database.Update(counterForUser);
             _database.SaveChanges();
             
-            return GetNewAchievements(counterForUser);
+            var achievementsGained = GetNewAchievements(counterForUser);
+            foreach (var achievement in achievementsGained)
+            {
+                var achievementForUser = new AchievementForUser
+                {
+                    User = ev.GlobalIdentity,
+                    Achievement = achievement,
+                    AchievementId = achievement.Id,
+                    Achieved = true,
+                    Recieved = false,
+                };
+                _database.Add(achievementForUser);
+            }
+            _database.SaveChanges();
         }
 
         private List<Achievement> GetNewAchievements(CounterForUser counterForUser)
