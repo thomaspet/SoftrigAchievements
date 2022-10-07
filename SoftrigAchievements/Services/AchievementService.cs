@@ -68,7 +68,7 @@ namespace SoftrigAchievements.Services
             var achievedNow = new List<Achievement>();
             foreach (var achievement in possibleAchievements)
             {
-                if (achievedAllready.Contains(achievement.Id)) achievedNow.Add(achievement);
+                if (!achievedAllready.Contains(achievement.Id)) achievedNow.Add(achievement);
             }
             return achievedNow;
         }
