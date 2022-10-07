@@ -37,8 +37,14 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("read", p => p.RequireAuthenticatedUser());
 });
+builder.Services.AddCors();
 
 var app = builder.Build();
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(isOriginAllowed => true)
+    .AllowCredentials());
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
