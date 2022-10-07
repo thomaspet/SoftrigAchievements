@@ -5,14 +5,23 @@ using System.Collections.Generic;
 using System.Collections;
 using SoftrigAchievements.Controllers;
 using Database;
+using SoftrigAchievements.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("UniEcomony", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("uri:appframework"));
+});
 builder.Services.AddDbContext<Context>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.AddHttpClient();
+builder.Services.AddScoped<IEconomyHttpService, EconomyHttpService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -44,5 +53,6 @@ app.UseAuthorization();
 
 app.MapGet("/api/new-achievements", NewAchievements.GetNewAchievements).RequireAuthorization();
 app.MapPost("/webhooks/new-company", Webhooks.NewCompanyAddedWebhook).AllowAnonymous();
+app.MapPost("/webhooks/listen/customerinvoice", Webhooks.HandleCustomerInvoiceWebhook).AllowAnonymous();
 
 await app.RunAsync();
