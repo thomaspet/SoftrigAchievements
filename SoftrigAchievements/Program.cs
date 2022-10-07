@@ -20,7 +20,9 @@ builder.Services.AddHttpClient("UniEcomony", client =>
 });
 builder.Services.AddDbContext<Context>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
+builder.Services.AddScoped<IAchievementService, AchievementService>();
 builder.Services.AddScoped<IEconomyHttpService, EconomyHttpService>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace SoftrigAchievements.Services;
 
@@ -52,10 +53,20 @@ public sealed class EconomyHttpService : IEconomyHttpService
 			Content = new StringContent(JsonSerializer.Serialize(eventplan), Encoding.UTF8),
 		};
         var response = await httpClient.SendAsync(message);
-		var responseText = await response.Content.ReadAsStringAsync();
-
 		return true;
     }
+
+	public async Task<string> GetUserFromInvoiceAsync(Guid companyKey, int invoiceID)
+    {
+		var httpClient = await GetUniEconomyHttpClientAsync(companyKey);
+		var apiurl = _config.GetValue<string>("uri:appframework");
+		using var message = new HttpRequestMessage(HttpMethod.Get, new Uri($"{apiurl}/api/biz/invoices/{invoiceID}"));
+
+		var response = await httpClient.SendAsync(message);
+		var responseText = await response.Content.ReadAsStringAsync();
+
+		return (string) JsonNode.Parse(responseText)["CreatedBy"];
+	}
 
 	private async Task<HttpClient> GetUniEconomyHttpClientAsync(Guid companyKey)
 	{
@@ -85,6 +96,8 @@ public sealed class EconomyHttpService : IEconomyHttpService
 public interface IEconomyHttpService
 {
 	Task<bool> PushEventplanToCompanyAsync(Guid companyKey, string currentHost);
+
+	Task<string> GetUserFromInvoiceAsync(Guid companyKey, int invoiceID);
 }
 
 

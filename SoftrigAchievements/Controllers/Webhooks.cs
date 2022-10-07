@@ -1,6 +1,8 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using SoftrigAchievements.Models;
 using SoftrigAchievements.Services;
+using System.Text.Json.Nodes;
 
 namespace SoftrigAchievements.Controllers;
 
@@ -15,11 +17,18 @@ public class Webhooks
         return Results.Ok();
     }
 
-    public static IResult HandleCustomerInvoiceWebhook()
+    public async static Task<IResult> HandleCustomerInvoiceWebhook([FromBody]JsonNode input, [FromServices]IAchievementService service)
     {
-
+        var eventType = (string) input["EventType"];
+        var companyKey = (Guid)input["CompanyKey"];
+        var invoiceID = (int)input["EntityID"];
+        if (eventType == "Create")
+        {
+            await service.EventTriggeredAchievementAsync(companyKey, invoiceID, AchievementType.InvoiceCreated);
+        }
         return Results.Ok();
     }
+
 }
 
 

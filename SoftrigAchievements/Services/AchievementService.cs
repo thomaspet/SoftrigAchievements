@@ -8,29 +8,32 @@ namespace SoftrigAchievements.Services
 
     public interface IAchievementService
     {
-        void EventTriggeredAchievement(Event ev);
+        Task EventTriggeredAchievementAsync(Guid companyKey, int invoiceID, AchievementType achievementType);
     }
 
 
     public class AchievementService : IAchievementService
     {
         private Context _database;
-        public AchievementService(Context database)
+        private IEconomyHttpService _httpService;
+        public AchievementService(Context database, IEconomyHttpService httpService)
         {
             _database = database;
+            _httpService = httpService;
+
         }
 
-        public void EventTriggeredAchievement(Event ev)
+        public async Task EventTriggeredAchievementAsync(Guid companyKey, int invoiceID, AchievementType achievementType)
         {
-            var eventType = AchievementType.InvoiceSent;//This needs changing
-            var counterForUser = _database.CounterForUsers.FirstOrDefault(x => x.User == ev.GlobalIdentity && x.AchievementType == eventType);
+            var user = await _httpService.GetUserFromInvoiceAsync(companyKey, invoiceID);
+            var counterForUser = _database.CounterForUsers.FirstOrDefault(x => x.User == user && x.AchievementType == achievementType);
             if ( counterForUser == null )
             {
                 counterForUser = new CounterForUser
                 {
                     Count = 1,
-                    AchievementType = eventType,
-                    User = ev.GlobalIdentity,
+                    AchievementType = achievementType,
+                    User = user,
                 };
             }
             else
@@ -45,7 +48,7 @@ namespace SoftrigAchievements.Services
             {
                 var achievementForUser = new AchievementForUser
                 {
-                    User = ev.GlobalIdentity,
+                    User = user,
                     Achievement = achievement,
                     AchievementId = achievement.Id,
                     Achieved = true,
@@ -69,6 +72,5 @@ namespace SoftrigAchievements.Services
             }
             return achievedNow;
         }
-
     }
 }
