@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace SoftrigAchievements.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20221006112815_CreateAchievement")]
-    partial class CreateAchievement
+    [Migration("20221006170128_InitialSetup")]
+    partial class InitialSetup
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -74,6 +74,33 @@ namespace SoftrigAchievements.Migrations
 
             modelBuilder.Entity("SoftrigAchievements.Models.Achievement", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AchievementType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Achievements");
+                });
+
+            modelBuilder.Entity("SoftrigAchievements.Models.AchievementForUser", b =>
+                {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
@@ -83,16 +110,11 @@ namespace SoftrigAchievements.Migrations
                     b.Property<bool>("Achieved")
                         .HasColumnType("bit");
 
+                    b.Property<int>("AchievementId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Recieved")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UniEntity")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("User")
                         .IsRequired()
@@ -100,7 +122,43 @@ namespace SoftrigAchievements.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Achievements");
+                    b.HasIndex("AchievementId");
+
+                    b.ToTable("AchievementForUsers");
+                });
+
+            modelBuilder.Entity("SoftrigAchievements.Models.CounterForUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AchievementType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<string>("User")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CounterForUsers");
+                });
+
+            modelBuilder.Entity("SoftrigAchievements.Models.AchievementForUser", b =>
+                {
+                    b.HasOne("SoftrigAchievements.Models.Achievement", "Achievement")
+                        .WithMany()
+                        .HasForeignKey("AchievementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Achievement");
                 });
 #pragma warning restore 612, 618
         }

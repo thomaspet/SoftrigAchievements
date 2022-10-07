@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace SoftrigAchievements.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class CounterDatabaseModelSnapshot : ModelSnapshot
+    partial class ContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -78,6 +78,12 @@ namespace SoftrigAchievements.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("AchievementType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -88,7 +94,7 @@ namespace SoftrigAchievements.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Achievement");
+                    b.ToTable("Achievements");
                 });
 
             modelBuilder.Entity("SoftrigAchievements.Models.AchievementForUser", b =>
@@ -116,7 +122,30 @@ namespace SoftrigAchievements.Migrations
 
                     b.HasIndex("AchievementId");
 
-                    b.ToTable("Achievements");
+                    b.ToTable("AchievementForUsers");
+                });
+
+            modelBuilder.Entity("SoftrigAchievements.Models.CounterForUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AchievementType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<string>("User")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CounterForUsers");
                 });
 
             modelBuilder.Entity("SoftrigAchievements.Models.AchievementForUser", b =>

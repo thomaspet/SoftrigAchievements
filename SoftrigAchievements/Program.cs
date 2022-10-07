@@ -52,6 +52,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/api/new-achievements", NewAchievements.GetNewAchievements).RequireAuthorization();
+app.MapGet("/api/all-achievements", AllAchievements.GetAllAchievements).RequireAuthorization();
 app.MapPost("/webhooks/new-company", Webhooks.NewCompanyAddedWebhook).AllowAnonymous();
 app.MapPost("/webhooks/listen/customerinvoice", Webhooks.HandleCustomerInvoiceWebhook).AllowAnonymous();
 
