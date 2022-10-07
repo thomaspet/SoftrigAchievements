@@ -18,7 +18,7 @@ builder.Services.AddHttpClient("UniEcomony", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("uri:appframework"));
 });
-builder.Services.AddDbContext<Context>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddDbContext<Context>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("defaultDb")));
 
 builder.Services.AddScoped<IAchievementService, AchievementService>();
 builder.Services.AddScoped<IEconomyHttpService, EconomyHttpService>();
@@ -42,6 +42,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddCors();
 
 var app = builder.Build();
+
 app.UseCors(x => x
     .AllowAnyMethod()
     .AllowAnyHeader()
