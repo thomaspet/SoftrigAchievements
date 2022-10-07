@@ -43,6 +43,11 @@ builder.Services.AddCors();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<Context>();
+    dataContext.Database.Migrate();
+}
 app.UseCors(x => x
     .AllowAnyMethod()
     .AllowAnyHeader()
