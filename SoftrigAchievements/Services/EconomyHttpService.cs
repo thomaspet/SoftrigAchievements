@@ -23,7 +23,7 @@ public sealed class EconomyHttpService : IEconomyHttpService
 		_memoryCache = memoryCache;
 	}
 
-	public async Task<bool> PushEventplanToCompanyAsync(Guid companyKey, string currentHost)
+	public async Task<string> PushEventplanToCompanyAsync(Guid companyKey, string currentHost)
 	{
 		var httpClient = await GetUniEconomyHttpClientAsync(companyKey);
 
@@ -53,7 +53,8 @@ public sealed class EconomyHttpService : IEconomyHttpService
 			Content = new StringContent(JsonSerializer.Serialize(eventplan), Encoding.UTF8),
 		};
         var response = await httpClient.SendAsync(message);
-		return true;
+		var responseText = await response.Content.ReadAsStringAsync();
+		return responseText;
     }
 
 	public async Task<string> GetUserFromInvoiceAsync(Guid companyKey, int invoiceID)
@@ -95,7 +96,7 @@ public sealed class EconomyHttpService : IEconomyHttpService
 
 public interface IEconomyHttpService
 {
-	Task<bool> PushEventplanToCompanyAsync(Guid companyKey, string currentHost);
+	Task<string> PushEventplanToCompanyAsync(Guid companyKey, string currentHost);
 
 	Task<string> GetUserFromInvoiceAsync(Guid companyKey, int invoiceID);
 }

@@ -17,29 +17,18 @@ namespace SoftrigAchievements.Extensions
         private static string CreateClientToken(IConfiguration config, string audience)
         {
             X509Certificate2 certificate;
-            string certThumbprint = config.GetValue<string>("ui:Thumbprint");
+            string base64Certificate = config.GetValue<string>("base64Certificate");
             var clientId = config.GetValue<string>("ui:ClientID");
+            var certPass = config.GetValue<string>("ui:CertificatePassword");
 
-            if (certThumbprint is null)
+            if (string.IsNullOrWhiteSpace(base64Certificate))
             {
-                var certPass = config.GetValue<string>("ui:CertificatePassword");
                 var certPath = config.GetValue<string>("ui:CertificatePath");
                 certificate = new X509Certificate2(certPath, certPass);
             }
             else
             {
-                
-
-                X509Store certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
-                certStore.Open(OpenFlags.ReadOnly);
-                X509Certificate2Collection certCollection = certStore.Certificates.Find(
-                                           X509FindType.FindByThumbprint,
-                                             certThumbprint,
-                                           false);
-                
-                certificate = certCollection.FirstOrDefault();
-                    // Use certificate
-                certStore.Close();
+                certificate = new X509Certificate2(Convert.FromBase64String(base64Certificate), certPass);
             }
 
             var now = DateTime.UtcNow;

@@ -13,9 +13,15 @@ public class Webhooks
         [FromServices] IEconomyHttpService economyHttpService,
         [FromBody] NewCompanyEvent ev)
     {
-        await economyHttpService.PushEventplanToCompanyAsync(Guid.Parse(ev.CompanyKey), request.Host.ToString());
-        return Results.Ok();
-    }
+        try
+        {
+            var res = await economyHttpService.PushEventplanToCompanyAsync(Guid.Parse(ev.CompanyKey), request.Host.ToString());
+            return Results.Ok(res);
+        } catch (Exception ex )
+        {
+            return Results.BadRequest(ex.Message);
+        }
+    } 
 
     public async static Task<IResult> HandleCustomerInvoiceWebhook([FromBody]JsonNode input, [FromServices]IAchievementService service)
     {
