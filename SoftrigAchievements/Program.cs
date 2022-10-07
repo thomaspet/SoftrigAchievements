@@ -42,5 +42,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/api/new-achievements", NewAchievements.GetNewAchievements).RequireAuthorization();
+app.MapGet("/api/all-achievements", AllAchievements.GetAllAchievements).RequireAuthorization();
 
 await app.RunAsync();
